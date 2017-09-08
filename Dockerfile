@@ -1,11 +1,9 @@
-FROM debian:9
-# "Borrowed" from Damien DUPORTAL
+FROM alpine:latest
 
 ENV BATS_VERSION 0.4.0
-ENV DEBIAN_FRONTEND noninteractive
+ENV TERM xterm
 
-RUN apt-get update -q \
-	&& apt-get install -y -q --no-install-recommends bash curl ca-certificates
+RUN apk add --update --no-cache bash curl ca-certificates ncurses
 
 RUN curl -o "/tmp/v${BATS_VERSION}.tar.gz" -L \
 		"https://github.com/sstephenson/bats/archive/v${BATS_VERSION}.tar.gz" \
