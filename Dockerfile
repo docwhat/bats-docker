@@ -1,16 +1,34 @@
-FROM alpine:latest
+## Versions
+FROM alpine:3 AS alpine
+ENV BATS_VERSION 1.2.1
 
-ENV BATS_VERSION 0.4.0
-ENV TERM xterm
+## Builder
+FROM alpine AS builder
+RUN mkdir /bats-src
+WORKDIR /bats-src
+RUN apk add --update --no-cache \
+  bash \
+  ca-certificates \
+  curl \
+  tar \
+  && true
+RUN curl -sSLf \
+  -o bats-core.tgz \
+  "https://github.com/bats-core/bats-core/archive/v${BATS_VERSION}.tar.gz"
+RUN tar -z -x -f bats-core.tgz
+RUN cd bats-core* && ./install.sh /usr/local
+COPY entrypoint.bash /usr/local/bin/docker-entrypoint.bash
+RUN chmod +x /usr/local/bin/docker-entrypoint.bash
 
-RUN apk add --update --no-cache bash curl ca-certificates ncurses
-
-RUN curl -o "/tmp/v${BATS_VERSION}.tar.gz" -L \
-		"https://github.com/sstephenson/bats/archive/v${BATS_VERSION}.tar.gz" \
-	&& tar -x -z -f "/tmp/v${BATS_VERSION}.tar.gz" -C /tmp/ \
-	&& bash "/tmp/bats-${BATS_VERSION}/install.sh" /usr/local \
-	&& rm -rf /tmp/*
-
-ENTRYPOINT ["/usr/local/bin/bats"]
-
-CMD ["-v"]
+## Release image
+FROM alpine AS release
+WORKDIR /src
+VOLUME {"/src"}
+RUN \
+  apk add --update --no-cache \
+  bash \
+  ncurses \
+  && true
+COPY --from=builder /usr/local/ /usr/local/
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.bash"]
+CMD ["--help"]
