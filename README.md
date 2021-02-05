@@ -18,6 +18,6 @@ Usage
 # Assuming your source code is in the current directory
 # and the tests are in 'test/'.
 $ docker run --tty --rm \
-  --volume="${PWD}/:/code/:ro" \
-  docwhat/bats:latest /code/test/
+  --volume="${PWD}/:/src/:ro" \
+  docwhat/bats:latest /src/test/
 ```
