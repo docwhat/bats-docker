@@ -5,7 +5,7 @@ on:
     - cron: "42 22 * * *" # everyday at 10am
   push:
     branches:
-      - "master"
+      - "main"
     tags:
       - "v*.*.*"
 
