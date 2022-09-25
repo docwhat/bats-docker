@@ -1,5 +1,5 @@
 ## Versions
-FROM alpine:3 AS alpine
+FROM alpine:20220715 AS alpine
 ENV BATS_VERSION 1.3.0
 
 ## Builder
